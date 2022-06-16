@@ -54,17 +54,29 @@ public class MathsMethods {
         return( new double[] {rawRight, rawLeft});
     }
 
-    /// Will return the amount of ticks needed to be applied to all driving motors for the robot to move the provided number of centimetres
+    /**
+     *
+     * @param centimetres The amount of centimetres the robot as a whole should move
+     * @return The amount of ticks needed to be applied to all driving motors for the robot to move the provided number of centimetres
+     */
     public static int CentimetresToMainMotorTicks(int centimetres) {
         return (int)(centimetres / (9 * Math.PI) * 720);
     }
 
-    /// Will return the amount of ticks needed to be applied to all driving motors for the robot to move the provided number of inches
+    /**
+     *
+     * @param inches The amount of inches the robot as a whole should move
+     * @return The amount of ticks needed to be applied to all driving motors for the robot to move the provided number of inches
+     */
     public static int InchesToMainMotorTicks(int inches) {
         return CentimetresToMainMotorTicks((int)(inches * 2.54));
     }
 
-    /// Will return the amount of ticks needed to be applied to one side's driving motors for the robot to rotate the provided number of degrees
+    /**
+     *
+     * @param degrees The amount of degrees the robot as a whole should turn
+     * @return The amount of ticks needed to be applied to one side's driving motors for the robot to rotate the provided number of degrees
+     */
     public static int DegreesToMainMotorTicks(int degrees) {
         return MathsMethods.CentimetresToMainMotorTicks((int) (36 * Math.PI * 2 / (360 / degrees)));
     }
