@@ -1,0 +1,3 @@
+[submodule "FtcRobotController"]
+	path = FtcRobotController
+	url = https://github.com/FIRST-Tech-Challenge/FtcRobotController
