@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.driveropmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.MathsMethods;
 import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMap;
 
 
@@ -41,36 +42,15 @@ public class AllInOneOpMode extends LinearOpMode {
         while (opModeIsActive()) {
             double gradualIncreaseRate = 0.1;
 
-            double gamepadInputLeft = -gamepad1.left_stick_y;
-            double gamepadInputRight = -gamepad1.right_stick_y;
+            double gamepad1LeftStickY = -gamepad1.left_stick_y;
+            double gamepad1RightStickY = -gamepad1.right_stick_y;
 
             double oldLeftMotorPower = teamHardwareMap.leftMotor.getPower();
             double oldRightMotorPower = teamHardwareMap.rightMotor.getPower();
 
-            double newLeftMotorPower = oldLeftMotorPower;
-            double newRightMotorPower = oldRightMotorPower;
-
-            if (gamepadInputLeft == 0)
-            {
-                newLeftMotorPower = 0;
-            }
-            else if (oldLeftMotorPower < gamepadInputLeft) {
-                newLeftMotorPower += gradualIncreaseRate;
-            }
-            else if (oldLeftMotorPower > gamepadInputLeft) {
-                newLeftMotorPower -= gradualIncreaseRate;
-            }
-
-            if (gamepadInputRight == 0)
-            {
-                newRightMotorPower = 0;
-            }
-            else if (oldRightMotorPower < gamepadInputRight) {
-                newRightMotorPower += gradualIncreaseRate;
-            }
-            else if (oldRightMotorPower > gamepadInputRight) {
-                newRightMotorPower -= gradualIncreaseRate;
-            }
+            // calculate gradual motor powers, possibly overridden below
+            double newLeftMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldLeftMotorPower, gamepad1LeftStickY);
+            double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY);
 
             if (gamepad1.right_trigger > 0) {
                 newRightMotorPower = gamepad1.right_trigger;
@@ -88,7 +68,7 @@ public class AllInOneOpMode extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + teamHardwareMap.runTime.toString());
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            telemetry.addData("Input", "X: (%.2f); Y: (%.2f)", gamepadInputLeft, gamepadInputRight);
+            telemetry.addData("Input", "LJ: (%.2f); RJ: (%.2f)", gamepad1LeftStickY, gamepad1RightStickY);
             telemetry.addData("Motors", "Left: (%.2f); Right: (%.2f)", newLeftMotorPower, newRightMotorPower);
             telemetry.update();
 
