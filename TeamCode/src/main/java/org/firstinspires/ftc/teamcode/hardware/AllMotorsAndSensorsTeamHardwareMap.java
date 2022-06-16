@@ -62,7 +62,7 @@ public class AllMotorsAndSensorsTeamHardwareMap extends TeamHardwareMap {
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Set motors to use encoder
+        // Set motors to not use encoder
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
