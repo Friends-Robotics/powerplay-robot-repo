@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.enums.TurningDirection;
 import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMap;
 
 public class AutonomousMethods {
@@ -30,11 +30,20 @@ public class AutonomousMethods {
      * @param teamHardwareMap The team hardware map variable
      * @param degrees Then amount of degrees to turn the robot
      * @param speed The speed at which to turn the motors to complete the movement. (value between 0 and 1)
-     * @param turnLeftTrueTurnRightFalse Set to true to turn the robot left and false to turn the robot right
+     * @param turningDirection The direction to turn the robot
      * @return False if robot has not completed movement, true if robot has completed movement
      */
-    public static boolean TurnDegrees(AllMotorsAndSensorsTeamHardwareMap teamHardwareMap, int degrees, double speed, boolean turnLeftTrueTurnRightFalse) {
-        DcMotor motorToGetEncoderTicksFromAndMove = turnLeftTrueTurnRightFalse ? teamHardwareMap.rightMotor : teamHardwareMap.leftMotor;
+    public static boolean TurnDegrees(AllMotorsAndSensorsTeamHardwareMap teamHardwareMap, int degrees, double speed, TurningDirection turningDirection) {
+        DcMotor motorToGetEncoderTicksFromAndMove;
+        if (turningDirection == TurningDirection.Left) {
+            motorToGetEncoderTicksFromAndMove = teamHardwareMap.rightMotor;
+        }
+        else if (turningDirection == TurningDirection.Right){
+            motorToGetEncoderTicksFromAndMove = teamHardwareMap.leftMotor;
+        }
+        else {
+            throw new IllegalArgumentException();
+        }
 
         if (motorToGetEncoderTicksFromAndMove.getCurrentPosition() >= MathsMethods.DegreesToMainMotorTicks(degrees)) {
             teamHardwareMap.leftMotor.setPower(0);
