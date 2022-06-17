@@ -47,7 +47,7 @@ public class BlueShippingHubAutonomousOpMode extends LinearOpMode {
                 }
             }
 
-            if (lastStageFinished == numOfPreStages) {
+            if (lastStageFinished >= numOfPreStages && lastStageFinished < numOfPreStages + autonomousMovements.size()) {
                 AutonomousMovement currentAutonomousMovement = autonomousMovements.get(lastStageFinished - numOfPreStages);
                 boolean finished = false;
                 if (currentAutonomousMovement instanceof MoveForwardInchesAutonomousMovement) {

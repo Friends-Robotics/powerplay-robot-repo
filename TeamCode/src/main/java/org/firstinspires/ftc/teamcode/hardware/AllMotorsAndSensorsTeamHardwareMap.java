@@ -47,7 +47,7 @@ public class AllMotorsAndSensorsTeamHardwareMap extends TeamHardwareMap {
         hexMotor2 = hardwareMap.get(DcMotor.class, "Core_Hex_Motor_2");
 
         // Setup motor direction as positive power = forwards/(in/out)
-        hexMotor1.setDirection(DcMotor.Direction.REVERSE);
+        hexMotor1.setDirection(DcMotor.Direction.FORWARD);
         hexMotor2.setDirection(DcMotor.Direction.FORWARD);
 
         // Set zero power behavior: means when there is no power going to motor it breaks instead of free wheeling
