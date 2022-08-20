@@ -20,10 +20,12 @@ import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMa
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Everything (tank)", group="Linear Opmode")
-public class EverythingTankOpMode extends LinearOpMode {
+@TeleOp(name="One controller (tank)", group="Linear Opmode")
+public class OneControllerOpMode extends LinearOpMode {
 
     private AllMotorsAndSensorsTeamHardwareMap teamHardwareMap;
+
+    double previousValue = 0;
 
     @Override
     public void runOpMode() {
@@ -36,12 +38,13 @@ public class EverythingTankOpMode extends LinearOpMode {
         waitForStart();
         teamHardwareMap.runTime.reset();
 
-        while (opModeIsActive()) {
-            // get gamepad1 inputs
-            double gamepad1LeftStickY = -gamepad1.left_stick_y * 0.8; // -0.8 = full down and +0.8 = full up
-            double gamepad1RightStickY = -gamepad1.right_stick_y * 0.8; // -0.8 = full down and +0.8 = full up
 
-            // get old motor powers
+        while (opModeIsActive()) {
+            double gradualIncreaseRate = 0.1;
+
+            double gamepad1LeftStickY = -gamepad1.left_stick_y;
+            double gamepad1RightStickY = -gamepad1.right_stick_y;
+
             double oldLeftMotorPower = teamHardwareMap.leftMotor.getPower();
             double oldRightMotorPower = teamHardwareMap.rightMotor.getPower();
 
@@ -49,18 +52,13 @@ public class EverythingTankOpMode extends LinearOpMode {
             double newLeftMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldLeftMotorPower, gamepad1LeftStickY);
             double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY);
 
-            if (gamepad1.right_trigger > 0) { // full forwards
+            if (gamepad1.right_trigger > 0) {
                 newRightMotorPower = gamepad1.right_trigger;
                 newLeftMotorPower = gamepad1.right_trigger;
             }
-            if (gamepad1.left_trigger > 0) { // full backwards
+            if (gamepad1.left_trigger > 0) {
                 newRightMotorPower = -gamepad1.left_trigger;
                 newLeftMotorPower = -gamepad1.left_trigger;
-            }
-
-            if (gamepad1.circle) { // emergency stop
-                newLeftMotorPower = 0;
-                newRightMotorPower = 0;
             }
 
             // Send calculated power to wheels
@@ -71,57 +69,48 @@ public class EverythingTankOpMode extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + teamHardwareMap.runTime.toString());
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.addData("Input", "LJ: (%.2f); RJ: (%.2f)", gamepad1LeftStickY, gamepad1RightStickY);
-            telemetry.addData("Input", "LT: (%.2f); RT: (%.2f)", gamepad1.left_trigger, gamepad1.right_trigger);
             telemetry.addData("Motors", "Left: (%.2f); Right: (%.2f)", newLeftMotorPower, newRightMotorPower);
             telemetry.update();
 
-            // get gamepad2 inputs
-            double gamepad2LeftStickY = -gamepad2.left_stick_y; // -1 = full down and +1 = full up
-            double gamepad2RightStickY = -gamepad2.right_stick_y; // -1 = full down and +1 = full up
+            ////////////
 
-            if (gamepad2LeftStickY < 0) // drop arm
+            if (gamepad1.right_bumper)
             {
-                teamHardwareMap.hexMotor1.setPower((gamepad2LeftStickY) + 0.1);
+                teamHardwareMap.hexMotor1.setPower(1);
             }
-            else if (gamepad2LeftStickY > 0) // lift arm
+            if (gamepad1.left_bumper)
             {
-                teamHardwareMap.hexMotor1.setPower((gamepad2LeftStickY/3) + 0.1);
+                teamHardwareMap.hexMotor1.setPower(-1);
             }
-            else { // hold arm
+            else
+            {
                 teamHardwareMap.hexMotor1.setPower(0.1);
             }
 
-            if (gamepad2RightStickY > -0.1 && gamepad2RightStickY < 0.1) { // fix stick drift moving spinner
+            if (gamepad1.triangle) {
+                teamHardwareMap.hexMotor2.setPower(1);
+            }
+            else if (gamepad1.cross) {
+                teamHardwareMap.hexMotor2.setPower(-1);
+            }
+            else {
                 teamHardwareMap.hexMotor2.setPower(0);
             }
-            else { // move spinner
-                if (gamepad2RightStickY > 0) {
-                    teamHardwareMap.hexMotor2.setPower(gamepad2RightStickY * 0.5); // slower intake
-                } else {
-                    teamHardwareMap.hexMotor2.setPower(gamepad2RightStickY); // faster outtake
-                }
-            }
 
-            if (gamepad2.right_bumper && gamepad2.left_bumper) // don't move duck spinner
-            {
-                teamHardwareMap.continuousServo1.setPower(0);
-            }
-            else if (gamepad2.right_bumper) // move duck spinner
-            {
+            ////////////
+
+            if (gamepad1.circle) {
                 teamHardwareMap.continuousServo1.setPower(1);
             }
-            else if (gamepad2.left_bumper) // move duck spinner
-            {
+            else if (gamepad1.square) {
                 teamHardwareMap.continuousServo1.setPower(-1);
             }
-            else // don't move duck spinner
-            {
+            else {
                 teamHardwareMap.continuousServo1.setPower(0);
             }
 
-            telemetry.addData("Left Y value", gamepad2LeftStickY);
-            telemetry.addData("Right Y value", gamepad2RightStickY);
-            telemetry.addData("servo power" , teamHardwareMap.continuousServo1.getPower());
+            ////////////
+
             telemetry.update();
         }
     }
