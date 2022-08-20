@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.driveropmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.MathsMethods;
 import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMap;
 
 
@@ -19,10 +20,12 @@ import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMa
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Everything (tank)", group="Linear Opmode")
-public class EverythingTankOpMode extends LinearOpMode {
+@TeleOp(name="Two controllers (tank)", group="Linear Opmode")
+public class TwoControllersTankOpMode extends LinearOpMode {
 
     private AllMotorsAndSensorsTeamHardwareMap teamHardwareMap;
+    private double totalMillisecondsAtLastLoop;
+    private double millisecondsSinceLastLoopStarted;
 
     @Override
     public void runOpMode() {
@@ -34,51 +37,32 @@ public class EverythingTankOpMode extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         teamHardwareMap.runTime.reset();
+        totalMillisecondsAtLastLoop = 0;
+        millisecondsSinceLastLoopStarted = 0;
 
         while (opModeIsActive()) {
-            double gradualIncreaseRate = 0.1;
+            millisecondsSinceLastLoopStarted = teamHardwareMap.runTime.milliseconds() - totalMillisecondsAtLastLoop;
+            totalMillisecondsAtLastLoop = teamHardwareMap.runTime.milliseconds();
 
             // get gamepad1 inputs
-            double gamepad1LeftStickY = gamepad1.left_stick_y * 0.8;
-            double gamepad1RightStickY = gamepad1.right_stick_y * 0.8;
+            double gamepad1LeftStickY = -gamepad1.left_stick_y * 0.8; // -0.8 = full down and +0.8 = full up
+            double gamepad1RightStickY = -gamepad1.right_stick_y * 0.8; // -0.8 = full down and +0.8 = full up
 
             // get old motor powers
             double oldLeftMotorPower = teamHardwareMap.leftMotor.getPower();
             double oldRightMotorPower = teamHardwareMap.rightMotor.getPower();
 
-            // create variables to hold new motor powers
-            double newLeftMotorPower = oldLeftMotorPower;
-            double newRightMotorPower = oldRightMotorPower;
-
-            if (gamepad1LeftStickY == 0) // don't move left motor
-            {
-                newLeftMotorPower = 0;
-            }
-            else if (oldLeftMotorPower < gamepad1LeftStickY) { // increase left motor speed
-                newLeftMotorPower += gradualIncreaseRate;
-            }
-            else if (oldLeftMotorPower > gamepad1LeftStickY) { // decrease left motor speed
-                newLeftMotorPower -= gradualIncreaseRate;
-            }
-
-            if (gamepad1RightStickY == 0) // don't move right motor
-            {
-                newRightMotorPower = 0;
-            }
-            else if (oldRightMotorPower < gamepad1RightStickY) { // increase right motor speed
-                newRightMotorPower += gradualIncreaseRate;
-            }
-            else if (oldRightMotorPower > gamepad1RightStickY) { // decrease right motor speed
-                newRightMotorPower -= gradualIncreaseRate;
-            }
+            // calculate gradual motor powers, possibly overridden below
+            double newLeftMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldLeftMotorPower, gamepad1LeftStickY, millisecondsSinceLastLoopStarted);
+            double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY, millisecondsSinceLastLoopStarted);
 
             if (gamepad1.right_trigger > 0) { // full forwards
-                newRightMotorPower = -gamepad1.right_trigger;
-                newLeftMotorPower = -gamepad1.right_trigger;
+                newRightMotorPower = gamepad1.right_trigger;
+                newLeftMotorPower = gamepad1.right_trigger;
             }
             if (gamepad1.left_trigger > 0) { // full backwards
-                newRightMotorPower = gamepad1.left_trigger;
-                newLeftMotorPower = gamepad1.left_trigger;
+                newRightMotorPower = -gamepad1.left_trigger;
+                newLeftMotorPower = -gamepad1.left_trigger;
             }
 
             if (gamepad1.circle) { // emergency stop
@@ -93,30 +77,25 @@ public class EverythingTankOpMode extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + teamHardwareMap.runTime.toString());
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            telemetry.addData("Input", "X: (%.2f); Y: (%.2f)", gamepad1LeftStickY, gamepad1RightStickY);
+            telemetry.addData("Input", "LJ: (%.2f); RJ: (%.2f)", gamepad1LeftStickY, gamepad1RightStickY);
             telemetry.addData("Input", "LT: (%.2f); RT: (%.2f)", gamepad1.left_trigger, gamepad1.right_trigger);
             telemetry.addData("Motors", "Left: (%.2f); Right: (%.2f)", newLeftMotorPower, newRightMotorPower);
             telemetry.update();
 
             // get gamepad2 inputs
-            double gamepad2LeftStickY = -gamepad2.left_stick_y;
-            double gamepad2RightStickY = gamepad2.right_stick_y;
+            double gamepad2LeftStickY = -gamepad2.left_stick_y; // -1 = full down and +1 = full up
+            double gamepad2RightStickY = -gamepad2.right_stick_y; // -1 = full down and +1 = full up
 
-            if (gamepad2LeftStickY > 0) // drop arm
+            if (gamepad2LeftStickY < 0) // drop arm
             {
-                if (gamepad2LeftStickY > 0.9) {
-                    teamHardwareMap.hexMotor1.setPower(gamepad2LeftStickY);
-                }
-                else {
-                    teamHardwareMap.hexMotor1.setPower((gamepad2LeftStickY) + 0.1);
-                }
+                teamHardwareMap.hexMotor1.setPower((gamepad2LeftStickY) + 0.1); // faster drop
             }
-            else if (gamepad2LeftStickY < 0) // lift arm
+            else if (gamepad2LeftStickY > 0) // lift arm
             {
-                teamHardwareMap.hexMotor1.setPower((gamepad2LeftStickY/3) + 0.1);
+                teamHardwareMap.hexMotor1.setPower((gamepad2LeftStickY/3) + 0.1); // slower lift
             }
             else { // hold arm
-                teamHardwareMap.hexMotor1.setPower(0.1);
+                teamHardwareMap.hexMotor1.setPower(0.1); // constant power to counteract gravity
             }
 
             if (gamepad2RightStickY > -0.1 && gamepad2RightStickY < 0.1) { // fix stick drift moving spinner

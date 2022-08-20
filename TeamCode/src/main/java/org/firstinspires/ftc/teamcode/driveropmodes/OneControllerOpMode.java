@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.driveropmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.MathsMethods;
 import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMap;
 
 
@@ -19,12 +20,12 @@ import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMa
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="All in one (tank)", group="Linear Opmode")
-public class AllInOneOpMode extends LinearOpMode {
+@TeleOp(name="One controller (tank)", group="Linear Opmode")
+public class OneControllerOpMode extends LinearOpMode {
 
     private AllMotorsAndSensorsTeamHardwareMap teamHardwareMap;
-
-    double previousValue = 0;
+    private double totalMillisecondsAtLastLoop;
+    private double millisecondsSinceLastLoopStarted;
 
     @Override
     public void runOpMode() {
@@ -36,49 +37,30 @@ public class AllInOneOpMode extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         teamHardwareMap.runTime.reset();
-
+        totalMillisecondsAtLastLoop = 0;
+        millisecondsSinceLastLoopStarted = 0;
 
         while (opModeIsActive()) {
-            double gradualIncreaseRate = 0.1;
+            millisecondsSinceLastLoopStarted = teamHardwareMap.runTime.milliseconds() - totalMillisecondsAtLastLoop;
+            totalMillisecondsAtLastLoop = teamHardwareMap.runTime.milliseconds();
 
-            double gamepadInputLeft = gamepad1.left_stick_y;
-            double gamepadInputRight = gamepad1.right_stick_y;
+            double gamepad1LeftStickY = -gamepad1.left_stick_y;
+            double gamepad1RightStickY = -gamepad1.right_stick_y;
 
             double oldLeftMotorPower = teamHardwareMap.leftMotor.getPower();
             double oldRightMotorPower = teamHardwareMap.rightMotor.getPower();
 
-            double newLeftMotorPower = oldLeftMotorPower;
-            double newRightMotorPower = oldRightMotorPower;
-
-            if (gamepadInputLeft == 0)
-            {
-                newLeftMotorPower = 0;
-            }
-            else if (oldLeftMotorPower < gamepadInputLeft) {
-                newLeftMotorPower += gradualIncreaseRate;
-            }
-            else if (oldLeftMotorPower > gamepadInputLeft) {
-                newLeftMotorPower -= gradualIncreaseRate;
-            }
-
-            if (gamepadInputRight == 0)
-            {
-                newRightMotorPower = 0;
-            }
-            else if (oldRightMotorPower < gamepadInputRight) {
-                newRightMotorPower += gradualIncreaseRate;
-            }
-            else if (oldRightMotorPower > gamepadInputRight) {
-                newRightMotorPower -= gradualIncreaseRate;
-            }
+            // calculate gradual motor powers, possibly overridden below
+            double newLeftMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldLeftMotorPower, gamepad1LeftStickY, millisecondsSinceLastLoopStarted);
+            double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY, millisecondsSinceLastLoopStarted);
 
             if (gamepad1.right_trigger > 0) {
-                newRightMotorPower = -gamepad1.right_trigger;
-                newLeftMotorPower = -gamepad1.right_trigger;
+                newRightMotorPower = gamepad1.right_trigger;
+                newLeftMotorPower = gamepad1.right_trigger;
             }
             if (gamepad1.left_trigger > 0) {
-                newRightMotorPower = gamepad1.left_trigger;
-                newLeftMotorPower = gamepad1.left_trigger;
+                newRightMotorPower = -gamepad1.left_trigger;
+                newLeftMotorPower = -gamepad1.left_trigger;
             }
 
             // Send calculated power to wheels
@@ -88,7 +70,7 @@ public class AllInOneOpMode extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + teamHardwareMap.runTime.toString());
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            telemetry.addData("Input", "X: (%.2f); Y: (%.2f)", gamepadInputLeft, gamepadInputRight);
+            telemetry.addData("Input", "LJ: (%.2f); RJ: (%.2f)", gamepad1LeftStickY, gamepad1RightStickY);
             telemetry.addData("Motors", "Left: (%.2f); Right: (%.2f)", newLeftMotorPower, newRightMotorPower);
             telemetry.update();
 

@@ -5,8 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.MathsMethods;
+import org.firstinspires.ftc.teamcode.AutonomousMethods;
+import org.firstinspires.ftc.teamcode.autonomousmovements.AutonomousMovement;
+import org.firstinspires.ftc.teamcode.autonomousmovements.MoveForwardInchesAutonomousMovement;
+import org.firstinspires.ftc.teamcode.autonomousmovements.TurnDegreesAutonomousMovement;
+import org.firstinspires.ftc.teamcode.enums.TurningDirection;
 import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMap;
+
+import java.util.ArrayList;
 
 @Autonomous(name = "Blue Shipping Hub", group = "tests")
 public class BlueShippingHubAutonomousOpMode extends LinearOpMode {
@@ -22,61 +28,40 @@ public class BlueShippingHubAutonomousOpMode extends LinearOpMode {
         waitForStart();
 
         timer.reset();
-        boolean stage1Fin = false;
-        boolean stage2Fin = false;
-        boolean stage3Fin = false;
+        final int numOfPreStages = 1;
+        int lastStageFinished = 0;
+        ArrayList<AutonomousMovement> autonomousMovements = new ArrayList<>();
+        autonomousMovements.add(new MoveForwardInchesAutonomousMovement(teamHardwareMap, 24, 0.5));
+        autonomousMovements.add(new TurnDegreesAutonomousMovement(teamHardwareMap, 90, 0.5, TurningDirection.Right));
+        autonomousMovements.add(new MoveForwardInchesAutonomousMovement(teamHardwareMap, 27, 0.5));
         while (opModeIsActive()) {
-            if (timer.milliseconds() < 500) {
-                teamHardwareMap.hexMotor1.setPower(0.5);
-            }
-            else {
-                teamHardwareMap.hexMotor1.setPower(0.05);
-            }
-            telemetry.addData("Encoder (left)", teamHardwareMap.leftMotor.getCurrentPosition());
-            telemetry.addData("Encoder (right)", teamHardwareMap.rightMotor.getCurrentPosition());
-            telemetry.update();
             teamHardwareMap.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             teamHardwareMap.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            if (!stage1Fin) {
-                if (teamHardwareMap.leftMotor.getCurrentPosition() <= -MathsMethods.InchesToMainMotorTicks(24)) {
-                    teamHardwareMap.leftMotor.setPower(0);
-                    teamHardwareMap.rightMotor.setPower(0);
-                    teamHardwareMap.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    teamHardwareMap.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    stage1Fin = true;
-                    continue;
+
+            if (lastStageFinished == 0) {
+                if (timer.milliseconds() < 500) { // raise arm for start of autonomous to get over pipes
+                    teamHardwareMap.hexMotor1.setPower(0.5);
                 } else {
-                    teamHardwareMap.leftMotor.setPower(-0.5);
-                    teamHardwareMap.rightMotor.setPower(-0.5);
-                    continue;
+                    teamHardwareMap.hexMotor1.setPower(0.05);
+                    lastStageFinished++;
                 }
             }
-            teamHardwareMap.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            teamHardwareMap.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            if (!stage2Fin) {
-                if (teamHardwareMap.leftMotor.getCurrentPosition() <= -MathsMethods.DegreesToMainMotorTicks(90)) {
-                    teamHardwareMap.leftMotor.setPower(0);
+
+            if (lastStageFinished >= numOfPreStages && lastStageFinished < numOfPreStages + autonomousMovements.size()) {
+                AutonomousMovement currentAutonomousMovement = autonomousMovements.get(lastStageFinished - numOfPreStages);
+                boolean finished = false;
+                if (currentAutonomousMovement instanceof MoveForwardInchesAutonomousMovement) {
+                    MoveForwardInchesAutonomousMovement moveForwardInchesAutonomousMovement = (MoveForwardInchesAutonomousMovement) currentAutonomousMovement;
+                    finished = AutonomousMethods.MoveForwardInches(currentAutonomousMovement.teamHardwareMap, moveForwardInchesAutonomousMovement.inches, moveForwardInchesAutonomousMovement.speed);
+                }
+                else if (currentAutonomousMovement instanceof TurnDegreesAutonomousMovement) {
+                    TurnDegreesAutonomousMovement turnDegreesAutonomousMovement = (TurnDegreesAutonomousMovement) currentAutonomousMovement;
+                    finished = AutonomousMethods.TurnDegrees(currentAutonomousMovement.teamHardwareMap, turnDegreesAutonomousMovement.degrees, turnDegreesAutonomousMovement.speed, turnDegreesAutonomousMovement.turningDirection);
+                }
+                if (finished) {
                     teamHardwareMap.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     teamHardwareMap.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    stage2Fin = true;
-                    continue;
-                } else {
-                    teamHardwareMap.leftMotor.setPower(-0.5);
-                    continue;
-                }
-            }
-            teamHardwareMap.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            teamHardwareMap.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            if (!stage3Fin) {
-                if (teamHardwareMap.leftMotor.getCurrentPosition() <= -MathsMethods.InchesToMainMotorTicks(27)) {
-                    teamHardwareMap.leftMotor.setPower(0);
-                    teamHardwareMap.rightMotor.setPower(0);
-                    stage3Fin = true;
-                    continue;
-                } else {
-                    teamHardwareMap.leftMotor.setPower(-0.5);
-                    teamHardwareMap.rightMotor.setPower(-0.5);
-                    continue;
+                    lastStageFinished++;
                 }
             }
         }
