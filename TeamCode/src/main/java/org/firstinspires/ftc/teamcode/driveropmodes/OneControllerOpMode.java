@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMa
 public class OneControllerOpMode extends LinearOpMode {
 
     private AllMotorsAndSensorsTeamHardwareMap teamHardwareMap;
-
-    double previousValue = 0;
+    private double totalMillisecondsAtLastLoop;
+    private double millisecondsSinceLastLoopStarted;
 
     @Override
     public void runOpMode() {
@@ -37,10 +37,12 @@ public class OneControllerOpMode extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         teamHardwareMap.runTime.reset();
-
+        totalMillisecondsAtLastLoop = 0;
+        millisecondsSinceLastLoopStarted = 0;
 
         while (opModeIsActive()) {
-            double gradualIncreaseRate = 0.1;
+            millisecondsSinceLastLoopStarted = teamHardwareMap.runTime.milliseconds() - totalMillisecondsAtLastLoop;
+            totalMillisecondsAtLastLoop = teamHardwareMap.runTime.milliseconds();
 
             double gamepad1LeftStickY = -gamepad1.left_stick_y;
             double gamepad1RightStickY = -gamepad1.right_stick_y;
@@ -49,8 +51,8 @@ public class OneControllerOpMode extends LinearOpMode {
             double oldRightMotorPower = teamHardwareMap.rightMotor.getPower();
 
             // calculate gradual motor powers, possibly overridden below
-            double newLeftMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldLeftMotorPower, gamepad1LeftStickY);
-            double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY);
+            double newLeftMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldLeftMotorPower, gamepad1LeftStickY, millisecondsSinceLastLoopStarted);
+            double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY, millisecondsSinceLastLoopStarted);
 
             if (gamepad1.right_trigger > 0) {
                 newRightMotorPower = gamepad1.right_trigger;

@@ -8,6 +8,7 @@ public class MathsMethods {
     static final double centimetresPerInch = 2.54;
     static final double centimetresBetweenBackWheels = 36;
     static final double gradualIncreaseRate = 0.1;
+    static final double millisecondsToPerformGradualIncreaseOver = 50;
 
     public static double[] JoystickToDifferential(double x, double y) {
         if (x == 0 && y == 0) {
@@ -95,16 +96,16 @@ public class MathsMethods {
      * @param targetMotorPower The target power being indicated by the joystick. You will need to apply the negative inversion. (value between -1 and +1)
      * @return The new power to be applied to the motor. (value between -1 and +1)
      */
-    public static double CalculateNewGradualMotorPower(double oldMotorPower, double targetMotorPower) {
+    public static double CalculateNewGradualMotorPower(double oldMotorPower, double targetMotorPower, double millisecondsSinceLastLoopStarted) {
         if (targetMotorPower == 0) // don't move motor
         {
             return 0;
         }
         else if (oldMotorPower < targetMotorPower) { // increase motor speed
-            return Range.clip(oldMotorPower + gradualIncreaseRate, -1, 1);
+            return Range.clip(oldMotorPower + gradualIncreaseRate * (millisecondsSinceLastLoopStarted / millisecondsToPerformGradualIncreaseOver), -1, 1);
         }
         else if (oldMotorPower > targetMotorPower) { // decrease motor speed
-            return Range.clip(oldMotorPower - gradualIncreaseRate, -1, 1);
+            return Range.clip(oldMotorPower - gradualIncreaseRate * (millisecondsSinceLastLoopStarted / millisecondsToPerformGradualIncreaseOver), -1, 1);
         }
         throw new IllegalArgumentException();
     }
