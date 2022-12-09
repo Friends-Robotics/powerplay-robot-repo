@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import android.graphics.Camera;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 public class AllMotorsAndSensorsTeamHardwareMap extends TeamHardwareMap {
 
@@ -69,6 +73,7 @@ public class AllMotorsAndSensorsTeamHardwareMap extends TeamHardwareMap {
 
 
         continuousServo1 = hardwareMap.get(CRServo.class, "Continuous_Rotation_Servo_1");
+
         //continuousServo2 = hardwareMap.get(CRServo.class, "Continuous_Rotation_Servo_2");
 
         //servo1 = hardwareMap.get(Servo.class, "Servo_1");
