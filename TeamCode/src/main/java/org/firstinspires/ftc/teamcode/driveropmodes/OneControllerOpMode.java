@@ -56,12 +56,12 @@ public class OneControllerOpMode extends LinearOpMode {
             double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY, millisecondsSinceLastLoopStarted);
 
             if (gamepad1.right_trigger > 0) {
-                newRightMotorPower = gamepad1.right_trigger;
-                newLeftMotorPower = gamepad1.right_trigger;
+                newRightMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(gamepad1.right_trigger);
+                newLeftMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(gamepad1.right_trigger);
             }
             if (gamepad1.left_trigger > 0) {
-                newRightMotorPower = -gamepad1.left_trigger;
-                newLeftMotorPower = -gamepad1.left_trigger;
+                newRightMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(-gamepad1.left_trigger);
+                newLeftMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(-gamepad1.left_trigger);
             }
 
             // Send calculated power to wheels
