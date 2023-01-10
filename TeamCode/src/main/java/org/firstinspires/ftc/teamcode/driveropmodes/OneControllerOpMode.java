@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MathsMethods;
 import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMap;
+import org.firstinspires.ftc.teamcode.hardware.DrivetrainOnlyTeamHardwareMap;
 
 
 /**
@@ -23,13 +24,13 @@ import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMa
 @TeleOp(name="One controller (tank)", group="Linear Opmode")
 public class OneControllerOpMode extends LinearOpMode {
 
-    private AllMotorsAndSensorsTeamHardwareMap teamHardwareMap;
+    private DrivetrainOnlyTeamHardwareMap teamHardwareMap;
     private double totalMillisecondsAtLastLoop;
     private double millisecondsSinceLastLoopStarted;
 
     @Override
     public void runOpMode() {
-        teamHardwareMap = new AllMotorsAndSensorsTeamHardwareMap(hardwareMap);
+        teamHardwareMap = new DrivetrainOnlyTeamHardwareMap(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -76,7 +77,7 @@ public class OneControllerOpMode extends LinearOpMode {
 
             ////////////
 
-            if (gamepad1.right_bumper)
+            /*if (gamepad1.right_bumper)
             {
                 teamHardwareMap.hexMotor1.setPower(1);
             }
@@ -109,7 +110,7 @@ public class OneControllerOpMode extends LinearOpMode {
             }
             else {
                 teamHardwareMap.continuousServo1.setPower(0);
-            }
+            }*/
 
             ////////////
 

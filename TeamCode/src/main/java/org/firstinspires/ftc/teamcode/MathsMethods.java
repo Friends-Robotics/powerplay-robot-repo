@@ -7,7 +7,7 @@ public class MathsMethods {
     static final double diameterOfWheel = 9;
     static final double centimetresPerInch = 2.54;
     static final double centimetresBetweenBackWheels = 36;
-    static final double gradualIncreaseRate = 0.1;
+    static final double gradualIncreaseRate = 0.05;
     static final double millisecondsToPerformGradualIncreaseOver = 50;
 
     public static double[] JoystickToDifferential(double x, double y) {
@@ -107,6 +107,9 @@ public class MathsMethods {
         else if (oldMotorPower > targetMotorPower) { // decrease motor speed
             return Range.clip(oldMotorPower - gradualIncreaseRate * (millisecondsSinceLastLoopStarted / millisecondsToPerformGradualIncreaseOver), -1, 1);
         }
-        throw new IllegalArgumentException();
+        else if (oldMotorPower == targetMotorPower) {
+            return oldMotorPower;
+        }
+        throw new IllegalArgumentException("MathsMethods.java line 110 --- targetMotorSpeed = " + targetMotorPower + ", oldMotorPower = " + oldMotorPower);
     }
 }
