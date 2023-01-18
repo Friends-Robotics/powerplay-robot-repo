@@ -47,21 +47,23 @@ public class OneControllerOpMode extends LinearOpMode {
 
             double gamepad1LeftStickY = -gamepad1.left_stick_y;
             double gamepad1RightStickY = -gamepad1.right_stick_y;
+            double gamepad1LeftTrigger = gamepad1.left_trigger;
+            double gamepad1RightTrigger = gamepad1.right_trigger;
 
             double oldLeftMotorPower = teamHardwareMap.leftMotor.getPower();
             double oldRightMotorPower = teamHardwareMap.rightMotor.getPower();
 
             // calculate gradual motor powers, possibly overridden below
-            double newLeftMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldLeftMotorPower, gamepad1LeftStickY, millisecondsSinceLastLoopStarted);
-            double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY, millisecondsSinceLastLoopStarted);
+            double newLeftMotorPower = gamepad1LeftStickY;
+            double newRightMotorPower = gamepad1RightStickY;
 
-            if (gamepad1.right_trigger > 0) {
-                newRightMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(gamepad1.right_trigger);
-                newLeftMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(gamepad1.right_trigger);
+            if (gamepad1RightTrigger > 0) {
+                newRightMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(gamepad1RightTrigger);
+                newLeftMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(gamepad1RightTrigger);
             }
-            if (gamepad1.left_trigger > 0) {
-                newRightMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(-gamepad1.left_trigger);
-                newLeftMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(-gamepad1.left_trigger);
+            if (gamepad1LeftTrigger > 0) {
+                newRightMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(-gamepad1LeftTrigger);
+                newLeftMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(-gamepad1LeftTrigger);
             }
 
             // Send calculated power to wheels
@@ -71,7 +73,8 @@ public class OneControllerOpMode extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + teamHardwareMap.runTime.toString());
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            telemetry.addData("Input", "LJ: (%.2f); RJ: (%.2f)", gamepad1LeftStickY, gamepad1RightStickY);
+            telemetry.addData("Input", "L stick: (%.2f); R stick: (%.2f)", gamepad1LeftStickY, gamepad1RightStickY);
+            telemetry.addData("Input", "L trigger: (%.2f); R trigger: (%.2f)", gamepad1LeftTrigger, gamepad1RightTrigger);
             telemetry.addData("Motors", "Left: (%.2f); Right: (%.2f)", newLeftMotorPower, newRightMotorPower);
             telemetry.update();
 
@@ -110,11 +113,11 @@ public class OneControllerOpMode extends LinearOpMode {
             }
             else {
                 teamHardwareMap.continuousServo1.setPower(0);
-            }*/
+            }
 
             ////////////
 
-            telemetry.update();
+            telemetry.update();*/
         }
     }
 

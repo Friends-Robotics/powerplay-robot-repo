@@ -9,7 +9,7 @@ public class MathsMethods {
     static final double centimetresBetweenBackWheels = 36;
     static final double gradualIncreaseRate = 0.05;
     static final double millisecondsToPerformGradualIncreaseOver = 50;
-    static final int motorPowerExponentiation = 5;
+    static final int motorPowerExponentiation = 2;
 
     public static double[] JoystickToDifferential(double x, double y) {
         if (x == 0 && y == 0) {
@@ -115,6 +115,6 @@ public class MathsMethods {
     }
 
     public static double CalculateMotorOutputOnCurveFromControllerInput(double controllerInput) {
-        return Math.pow(controllerInput, motorPowerExponentiation);
+        return controllerInput >= 0 ? Math.pow(controllerInput, motorPowerExponentiation) : -Math.pow(controllerInput, motorPowerExponentiation);
     }
 }
