@@ -27,17 +27,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.driveropmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import android.graphics.Bitmap;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.common.InputImage;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import java.util.List;
+import com.vuforia.Image;
+import com.vuforia.PIXEL_FORMAT;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
 
 /**
  * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
@@ -49,9 +68,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection", group = "Concept")
-@Disabled
-public class ConceptTensorFlowObjectDetection extends LinearOpMode {
+@TeleOp(name = "Barcode Scanner", group = "Linear Opmode")
+public class BarcodeScannerOpMode extends LinearOpMode {
   /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
    * the following 4 detectable objects
    *  0: Ball,
@@ -84,7 +102,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+            "ASmf7uX/////AAABmTM1Hmvsakw2gXfUixO2NGQwY05LoFXWE43PK7h3QtlC5+8+AOy8qRhqszf5UY9UvlOn/vV76Po9E5iSATbsNcNVYHgxGnu+KGn3hya6FjYT/jGuay/PeTgMGnVJ5/Cy1cDQrJWk178dHgkT0MydhgI3nfU6qAvKui0Ad392QLghs0Pf6IdfcHzm/cNywFxCxb37QsC7mxbx6ULd/snwXaTa7PaYj26QJ32h3WJaGTTIRbYRmETJ4iyiSNpTlsyS5c250odtLw1MCkw4eHy64Bc/+J0XO4jCoLwjwUZMSn1e3lQeaa/KEgk635CfxesEocM7pejCgtLpSlATzr+3/hte7/fM5dtQQL4aQDKjr0O0";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -98,8 +116,9 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
@@ -127,28 +146,31 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                      telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                      // step through the list of recognitions and display boundary info.
-                      int i = 0;
-                      for (Recognition recognition : updatedRecognitions) {
-                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                          recognition.getLeft(), recognition.getTop());
-                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
-                        i++;
-                      }
-                      telemetry.update();
-                    }
+            VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+            long numImages = frame.getNumImages();
+            Image rgbFrame = null;
+            for (int i = 0; i < numImages; i++) {
+                if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
+                    rgbFrame = frame.getImage(i);
                 }
             }
+
+            InputImage inputImage = InputImage.fromByteBuffer(rgbFrame.getPixels(), rgbFrame.getWidth(), rgbFrame.getHeight(), 0, InputImage.IMAGE_FORMAT_NV21);
+            BarcodeScanner barcodeScanner = BarcodeScanning.getClient();
+
+            barcodeScanner.process(inputImage).addOnSuccessListener(new OnSuccessListener<List<Barcode>>() {
+                @Override
+                public void onSuccess(List<Barcode> barcodes) {
+                    telemetry.addData("Barcode value", barcodes.get(0).getRawValue());
+                    telemetry.update();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    telemetry.addData("Failed to get barcode", e.getMessage());
+                    telemetry.update();
+                }
+            });
         }
     }
 
@@ -162,7 +184,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -177,7 +199,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
             "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.minResultConfidence = 0.75f;
         tfodParameters.isModelTensorFlow2 = true;
         tfodParameters.inputSize = 320;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);

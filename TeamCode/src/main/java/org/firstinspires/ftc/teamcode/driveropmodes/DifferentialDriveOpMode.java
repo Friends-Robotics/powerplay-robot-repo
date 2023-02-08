@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.hardware.DriverMotorsOnlyTeamHardwareMap;
 
 @TeleOp(name="Differential Drive", group="Linear Opmode")
 @Disabled
-public class DifferentialDrive_OpMode extends LinearOpMode {
+public class DifferentialDriveOpMode extends LinearOpMode {
 
     private DriverMotorsOnlyTeamHardwareMap teamHardwareMap;
 
