@@ -46,12 +46,14 @@ public class LinearSlideTestOpMode extends LinearOpMode {
             gamepadInputY = gamepad1.left_stick_y;
             // Send calculated power to wheels
 
-            int max = 21;
+            int max = -100;
             int min = -4000;
 
             int pos = teamHardwareMap.motor.getCurrentPosition();
-            if (!(teamHardwareMap.motor.getCurrentPosition() > max || teamHardwareMap.motor.getCurrentPosition() < min))
+            if (teamHardwareMap.motor.getCurrentPosition() < max || teamHardwareMap.motor.getCurrentPosition() > min)
                 teamHardwareMap.motor.setPower(gamepadInputY);
+            else
+                teamHardwareMap.motor.setPower(0);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + teamHardwareMap.runTime.toString());
