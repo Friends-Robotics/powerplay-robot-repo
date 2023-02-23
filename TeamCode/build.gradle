@@ -17,5 +17,6 @@ apply from: '../build.dependencies.gradle'
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.0.0'
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 }
