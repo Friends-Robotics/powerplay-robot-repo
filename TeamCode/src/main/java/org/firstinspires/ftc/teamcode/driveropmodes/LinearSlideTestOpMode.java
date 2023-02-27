@@ -50,7 +50,7 @@ public class LinearSlideTestOpMode extends LinearOpMode {
             int min = -4000;
 
             int pos = teamHardwareMap.motor.getCurrentPosition();
-            if (teamHardwareMap.motor.getCurrentPosition() < max || teamHardwareMap.motor.getCurrentPosition() > min)
+            if (teamHardwareMap.motor.getCurrentPosition() < max && teamHardwareMap.motor.getCurrentPosition() > min)
                 teamHardwareMap.motor.setPower(gamepadInputY);
             else
                 teamHardwareMap.motor.setPower(0);
