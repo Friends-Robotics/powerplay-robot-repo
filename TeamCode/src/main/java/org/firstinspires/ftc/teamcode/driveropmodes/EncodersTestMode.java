@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.driveropmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.encoderTestHardwareMap;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -27,6 +29,7 @@ public class EncodersTestMode extends LinearOpMode {
     private encoderTestHardwareMap teamHardwareMap;
 
     double previousValue = 0;
+    ElapsedTime timer =  new ElapsedTime();
 
     @Override
     public void runOpMode() {
@@ -49,12 +52,14 @@ public class EncodersTestMode extends LinearOpMode {
         prevState = ConvertBoolArrayToInt(previousState);
         curState = ConvertBoolArrayToInt(currentState);
 
+        int currentpos = 0;
+
+
         while (opModeIsActive()) {
+            timer.reset();
             double gamepadInputY;
             gamepadInputY = gamepad1.left_stick_y;
             // Send calculated power to wheels
-
-            int currentpos = 0;
 
             if (curState != prevState)
             {
@@ -74,10 +79,10 @@ public class EncodersTestMode extends LinearOpMode {
                     case 1:
                         switch (curState)
                         {
-                            case 3:
+                            case 0:
                                 currentpos--;
                                 break;
-                            case 0:
+                            case 3:
                                 currentpos++;
                                 break;
                         }
@@ -85,10 +90,10 @@ public class EncodersTestMode extends LinearOpMode {
                     case 2:
                         switch (curState)
                         {
-                            case 0:
+                            case 3:
                                 currentpos--;
                                 break;
-                            case 3:
+                            case 0:
                                 currentpos++;
                                 break;
                         }
@@ -114,7 +119,7 @@ public class EncodersTestMode extends LinearOpMode {
 
 
 
-            teamHardwareMap.motor.setPower(gamepadInputY);
+            teamHardwareMap.motor.setPower(gamepadInputY/2);
 
 
             // Show the elapsed game time and wheel power.
@@ -122,6 +127,8 @@ public class EncodersTestMode extends LinearOpMode {
             telemetry.addData("Logging 1", teamHardwareMap.Encoder1.getState());
             telemetry.addData("Logging 2", teamHardwareMap.Encoder2.getState());
             telemetry.addData("CurrentPos:", currentpos);
+            telemetry.addData("Timer:", timer.time(TimeUnit.MILLISECONDS));
+
 
 
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
@@ -142,7 +149,7 @@ public class EncodersTestMode extends LinearOpMode {
         {
             total += 1;
         }
-        return 0;
+        return total;
     }
 
 }
