@@ -52,7 +52,8 @@ public class EncodersTestMode extends LinearOpMode {
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + teamHardwareMap.runTime.toString());
-            telemetry.addData("Logging", teamHardwareMap.Encoder.getLoggingTag());
+            telemetry.addData("Logging 1", teamHardwareMap.Encoder1.getState());
+            telemetry.addData("Logging 2", teamHardwareMap.Encoder1.getState());
 
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.addData("Input", "Y: (%.2f)", gamepadInputY);
