@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
 
@@ -11,7 +12,8 @@ public class encoderTestHardwareMap extends TeamHardwareMap {
     }
 
     public DcMotor motor;
-    public I2cDeviceSynchSimple Encoder;
+    public DigitalChannel Encoder1;
+    public DigitalChannel Encoder2;
 
     @Override
     protected void initialise() {
@@ -19,6 +21,7 @@ public class encoderTestHardwareMap extends TeamHardwareMap {
         motor = hardwareMap.get(DcMotor.class, "Motor0");
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        Encoder = hardwareMap.get(I2cDeviceSynchSimple.class, "imu" );
+        Encoder1 = hardwareMap.get(DigitalChannel.class, "Encoder1" );
+        Encoder2 = hardwareMap.get(DigitalChannel.class, "Encoder2" );
     }
 }
