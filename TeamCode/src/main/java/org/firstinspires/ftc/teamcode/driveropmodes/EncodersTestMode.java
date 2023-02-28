@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.hardware.encoderTestHardwareMap;
 
+import java.util.Arrays;
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -38,12 +40,77 @@ public class EncodersTestMode extends LinearOpMode {
         waitForStart();
         teamHardwareMap.runTime.reset();
 
+        boolean[] previousState = new boolean[]{teamHardwareMap.Encoder1.getState(), teamHardwareMap.Encoder2.getState()};
+        boolean[] currentState = new boolean[]{teamHardwareMap.Encoder1.getState(), teamHardwareMap.Encoder2.getState()};
+
+        int prevState = 0;
+        int curState = 0;
+
+        prevState = ConvertBoolArrayToInt(previousState);
+        curState = ConvertBoolArrayToInt(currentState);
 
         while (opModeIsActive()) {
             double gamepadInputY;
             gamepadInputY = gamepad1.left_stick_y;
             // Send calculated power to wheels
 
+            int currentpos = 0;
+
+            if (curState != prevState)
+            {
+                switch(prevState)
+                {
+                    case 0:
+                        switch (curState)
+                        {
+                            case 1:
+                                currentpos--;
+                                break;
+                            case 2:
+                                currentpos++;
+                                break;
+                        }
+                        break;
+                    case 1:
+                        switch (curState)
+                        {
+                            case 3:
+                                currentpos--;
+                                break;
+                            case 0:
+                                currentpos++;
+                                break;
+                        }
+                        break;
+                    case 2:
+                        switch (curState)
+                        {
+                            case 0:
+                                currentpos--;
+                                break;
+                            case 3:
+                                currentpos++;
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (curState)
+                        {
+                            case 2:
+                                currentpos--;
+                                break;
+                            case 1:
+                                currentpos++;
+                                break;
+                        }
+                        break;
+
+                }
+            }
+
+            prevState = curState;
+            currentState = new boolean[]{teamHardwareMap.Encoder1.getState(), teamHardwareMap.Encoder2.getState()};
+            curState = ConvertBoolArrayToInt(currentState);
 
 
 
@@ -53,13 +120,29 @@ public class EncodersTestMode extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + teamHardwareMap.runTime.toString());
             telemetry.addData("Logging 1", teamHardwareMap.Encoder1.getState());
-            telemetry.addData("Logging 2", teamHardwareMap.Encoder1.getState());
+            telemetry.addData("Logging 2", teamHardwareMap.Encoder2.getState());
+            telemetry.addData("CurrentPos:", currentpos);
+
 
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.addData("Input", "Y: (%.2f)", gamepadInputY);
             telemetry.update();
 
         }
+    }
+
+    public int ConvertBoolArrayToInt(boolean[] state)
+    {
+        int total = 0;
+        if (state[0])
+        {
+            total += 2;
+        }
+        if (state[1])
+        {
+            total += 1;
+        }
+        return 0;
     }
 
 }
