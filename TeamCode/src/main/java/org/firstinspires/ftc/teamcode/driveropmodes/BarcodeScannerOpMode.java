@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.driveropmodes;
 
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -56,6 +57,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -103,19 +107,57 @@ public class BarcodeScannerOpMode extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        if (opModeIsActive()) {
+        while (opModeIsActive()) {
+            telemetry.addData("sb4", 0);
+            telemetry.update();
+
+            vuforia.setFrameQueueCapacity(3);
             VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+            telemetry.addData("sb5", 0);
+            telemetry.update();
             long numImages = frame.getNumImages();
+            telemetry.addData("sb6", 0);
+            telemetry.update();
             Image rgbFrame = null;
+
+            telemetry.addData("sb3", 0);
+            telemetry.update();
+
             for (int i = 0; i < numImages; i++) {
-                if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
-                    rgbFrame = frame.getImage(i);
-                }
+                rgbFrame = rgbFrame == null ? frame.getImage(i) : rgbFrame;
             }
 
-            InputImage inputImage = InputImage.fromByteBuffer(rgbFrame.getPixels(), rgbFrame.getWidth(), rgbFrame.getHeight(), 0, InputImage.IMAGE_FORMAT_NV21);
-            BarcodeScanner barcodeScanner = BarcodeScanning.getClient();
+            telemetry.addData("sb3", 1);
+            telemetry.update();
 
+            try (FileOutputStream stream = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/FIRST/data/image1")) {
+                telemetry.addData("sb3", 0);
+                telemetry.update();
+                stream.write(rgbFrame.getPixels().array());
+            } catch (FileNotFoundException e) {
+                telemetry.addData("sb3", 0);
+                telemetry.update();
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                telemetry.addData("sb3", 0);
+                telemetry.update();
+                throw new RuntimeException(e);
+            }
+
+            telemetry.addData("sb2", 0);
+            telemetry.update();
+
+            //InputImage inputImage = InputImage.fromByteBuffer(rgbFrame.getPixels(), rgbFrame.getWidth(), rgbFrame.getHeight(), 0, rgbFrame.getFormat());
+
+            telemetry.addData("sb7", 0);
+            telemetry.update();
+
+            //BarcodeScanner barcodeScanner = BarcodeScanning.getClient();
+
+            telemetry.addData("sb1", 0);
+            telemetry.update();
+
+            /*
             barcodeScanner.process(inputImage).addOnSuccessListener(new OnSuccessListener<List<Barcode>>() {
                 @Override
                 public void onSuccess(List<Barcode> barcodes) {
@@ -129,6 +171,7 @@ public class BarcodeScannerOpMode extends LinearOpMode {
                     telemetry.update();
                 }
             });
+            */
         }
     }
 

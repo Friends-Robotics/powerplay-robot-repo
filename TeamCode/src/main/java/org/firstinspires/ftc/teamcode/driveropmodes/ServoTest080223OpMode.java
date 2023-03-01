@@ -29,8 +29,14 @@ public class ServoTest080223OpMode extends LinearOpMode {
 
         while(opModeIsActive())
         {
-            teamHardwareMap.servo0.setPosition(gamepad1.left_stick_x);
-            teamHardwareMap.servo1.setPosition(-gamepad1.left_stick_x);
+            if (gamepad1.circle) {
+                teamHardwareMap.servo0.setPosition(1);
+                teamHardwareMap.servo1.setPosition(0);
+            }
+            if (gamepad1.cross) {
+                teamHardwareMap.servo0.setPosition(0);
+                teamHardwareMap.servo1.setPosition(1);
+            }
         }
     }
 }
