@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.hardware.LinearSlideWithGrabberHardwareMap;
 import org.firstinspires.ftc.teamcode.hardware.ServoMotorAdapterHardwareMap;
 import org.firstinspires.ftc.teamcode.hardware.ServoTest080223HardwareMap;
 
@@ -11,12 +12,12 @@ import org.firstinspires.ftc.teamcode.hardware.ServoTest080223HardwareMap;
 @TeleOp(name="Servo Test 08-02-23", group="Linear Opmode")
 public class ServoTest080223OpMode extends LinearOpMode {
 
-    private ServoTest080223HardwareMap teamHardwareMap;
+    private LinearSlideWithGrabberHardwareMap teamHardwareMap;
 
 
     @Override
     public void runOpMode() {
-        teamHardwareMap = new ServoTest080223HardwareMap(hardwareMap);
+        teamHardwareMap = new LinearSlideWithGrabberHardwareMap(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

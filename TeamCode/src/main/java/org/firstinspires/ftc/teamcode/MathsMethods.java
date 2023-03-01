@@ -117,4 +117,8 @@ public class MathsMethods {
     public static double CalculateMotorOutputOnCurveFromControllerInput(double controllerInput) {
         return controllerInput >= 0 ? Math.pow(controllerInput, motorPowerExponentiation) : -Math.pow(controllerInput, motorPowerExponentiation);
     }
+
+    public static boolean NeedsHardStopped(int ticks, int hardStop) {
+        return Math.abs(ticks - hardStop) > 20;
+    }
 }
