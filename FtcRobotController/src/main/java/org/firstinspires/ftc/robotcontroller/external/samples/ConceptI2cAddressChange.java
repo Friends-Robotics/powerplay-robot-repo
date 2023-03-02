@@ -194,7 +194,7 @@ public class ConceptI2cAddressChange extends LinearOpMode {
           allMatch = false;
         }
       }
-      RobotLog.e(s.toString() + "\n allMatch: " + allMatch + ", mismatch: " + mismatch);
+      RobotLog.e(s + "\n allMatch: " + allMatch + ", mismatch: " + mismatch);
       return allMatch;
     } finally {
       lock.unlock();

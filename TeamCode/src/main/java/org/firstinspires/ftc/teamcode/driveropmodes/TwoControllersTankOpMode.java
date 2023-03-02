@@ -95,7 +95,7 @@ public class TwoControllersTankOpMode extends LinearOpMode {
                 teamHardwareMap.hexMotor1.setPower((gamepad2LeftStickY/3) + 0.1); // slower lift
             }
             else { // hold arm
-                teamHardwareMap.hexMotor1.setPower(0.1); // constant power to counteract gravity
+                teamHardwareMap.hexMotor1.setPower(0); // constant power to counteract gravity
             }
 
             if (gamepad2RightStickY > -0.1 && gamepad2RightStickY < 0.1) { // fix stick drift moving spinner

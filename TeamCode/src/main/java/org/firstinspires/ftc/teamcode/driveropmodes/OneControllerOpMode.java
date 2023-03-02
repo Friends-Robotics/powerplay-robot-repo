@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MathsMethods;
 import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMap;
+import org.firstinspires.ftc.teamcode.hardware.DrivetrainOnlyTeamHardwareMap;
 
 
 /**
@@ -23,13 +24,13 @@ import org.firstinspires.ftc.teamcode.hardware.AllMotorsAndSensorsTeamHardwareMa
 @TeleOp(name="One controller (tank)", group="Linear Opmode")
 public class OneControllerOpMode extends LinearOpMode {
 
-    private AllMotorsAndSensorsTeamHardwareMap teamHardwareMap;
+    private DrivetrainOnlyTeamHardwareMap teamHardwareMap;
     private double totalMillisecondsAtLastLoop;
     private double millisecondsSinceLastLoopStarted;
 
     @Override
     public void runOpMode() {
-        teamHardwareMap = new AllMotorsAndSensorsTeamHardwareMap(hardwareMap);
+        teamHardwareMap = new DrivetrainOnlyTeamHardwareMap(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -55,12 +56,12 @@ public class OneControllerOpMode extends LinearOpMode {
             double newRightMotorPower = MathsMethods.CalculateNewGradualMotorPower(oldRightMotorPower, gamepad1RightStickY, millisecondsSinceLastLoopStarted);
 
             if (gamepad1.right_trigger > 0) {
-                newRightMotorPower = gamepad1.right_trigger;
-                newLeftMotorPower = gamepad1.right_trigger;
+                newRightMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(gamepad1.right_trigger);
+                newLeftMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(gamepad1.right_trigger);
             }
             if (gamepad1.left_trigger > 0) {
-                newRightMotorPower = -gamepad1.left_trigger;
-                newLeftMotorPower = -gamepad1.left_trigger;
+                newRightMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(-gamepad1.left_trigger);
+                newLeftMotorPower = MathsMethods.CalculateMotorOutputOnCurveFromControllerInput(-gamepad1.left_trigger);
             }
 
             // Send calculated power to wheels
@@ -76,7 +77,7 @@ public class OneControllerOpMode extends LinearOpMode {
 
             ////////////
 
-            if (gamepad1.right_bumper)
+            /*if (gamepad1.right_bumper)
             {
                 teamHardwareMap.hexMotor1.setPower(1);
             }
@@ -109,7 +110,7 @@ public class OneControllerOpMode extends LinearOpMode {
             }
             else {
                 teamHardwareMap.continuousServo1.setPower(0);
-            }
+            }*/
 
             ////////////
 
