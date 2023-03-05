@@ -46,21 +46,22 @@ public class MecanumHelper {
         if (x < 0 || y < 0) return;
         // currently only works for positive x and positive y values
 
-        SetMotorPower(Motor.FLW, 1);
-        SetMotorPower(Motor.BRW, 1);
         double angleThetaDegrees = Math.toDegrees(Math.atan(y / x));
+        double hypotenuseLength = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        double magnitude = hypotenuseLength / Math.sqrt(2);
+        double power = 0;
         if (angleThetaDegrees < 45) {
             double rangeAngle = 45 - angleThetaDegrees;
-            double power = -rangeAngle / 45;
-            SetMotorPower(Motor.FRW, power);
-            SetMotorPower(Motor.BLW, power);
+            power = -rangeAngle / 45;
         }
         if (angleThetaDegrees > 45) {
             double rangeAngle = angleThetaDegrees - 45;
-            double power = rangeAngle / 45;
-            SetMotorPower(Motor.FRW, power);
-            SetMotorPower(Motor.BLW, power);
+            power = rangeAngle / 45;
         }
+        SetMotorPower(Motor.FRW, power * magnitude);
+        SetMotorPower(Motor.BLW, power * magnitude);
+        SetMotorPower(Motor.FLW, magnitude);
+        SetMotorPower(Motor.BRW, magnitude);
     }
 
     public void rotate(double y) {
