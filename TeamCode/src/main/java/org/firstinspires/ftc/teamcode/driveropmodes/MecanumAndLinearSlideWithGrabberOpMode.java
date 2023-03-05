@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.hardware.MecanumMotorsLinearSlideGrabberHa
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Linear Slide With Grabber", group="Linear Opmode")
-public class LinearSlideWithGrabberOpMode extends LinearOpMode {
+@TeleOp(name="Mecanum And Linear Slide With Grabber", group="Linear Opmode")
+public class MecanumAndLinearSlideWithGrabberOpMode extends LinearOpMode {
 
     private MecanumMotorsLinearSlideGrabberHardwareMap teamHardwareMap;
 
@@ -46,7 +46,6 @@ public class LinearSlideWithGrabberOpMode extends LinearOpMode {
             double leftStickXInput = gamepad1.left_stick_x;
             double rightStickYInput = -gamepad1.right_stick_y;
 
-            //mecanumHelper.forward(leftStickYInput);
             mecanumHelper.go(leftStickXInput, leftStickYInput);
 
             teamHardwareMap.linearSlide.setPower(rightStickYInput / 1.5);
