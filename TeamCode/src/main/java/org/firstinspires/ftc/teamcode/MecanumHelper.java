@@ -42,7 +42,7 @@ public class MecanumHelper {
         }
     }
 
-    public void go(double x, double y) {
+    public void move(double x, double y) {
         if (x < 0 || y < 0) return;
         // currently only works for positive x and positive y values
 
@@ -61,5 +61,12 @@ public class MecanumHelper {
             SetMotorPower(Motor.FRW, power);
             SetMotorPower(Motor.BLW, power);
         }
+    }
+
+    public void rotate(double y) {
+        SetMotorPower(Motor.FLW, y);
+        SetMotorPower(Motor.BLW, y);
+        SetMotorPower(Motor.FRW, -y);
+        SetMotorPower(Motor.BRW, -y);
     }
 }

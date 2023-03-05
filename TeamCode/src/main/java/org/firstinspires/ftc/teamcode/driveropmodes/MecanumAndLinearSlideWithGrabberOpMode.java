@@ -46,7 +46,12 @@ public class MecanumAndLinearSlideWithGrabberOpMode extends LinearOpMode {
             double leftStickXInput = gamepad1.left_stick_x;
             double rightStickYInput = -gamepad1.right_stick_y;
 
-            mecanumHelper.go(leftStickXInput, leftStickYInput);
+            if (rightStickYInput == 0) {
+                mecanumHelper.move(leftStickXInput, leftStickYInput);
+            }
+            else {
+                mecanumHelper.rotate(rightStickYInput);
+            }
 
             teamHardwareMap.linearSlide.setPower(rightStickYInput / 1.5);
             if (rightStickYInput == 0) teamHardwareMap.linearSlide.setPower(0.1);
